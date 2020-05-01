@@ -109,14 +109,7 @@ for i in range(len(all_paths)):
             
             content[j] = c_line[0] + "," + str(c_line[1]) + "\n"
             
+    #WRITE TO NEW FILE
             
-        
-                
-    
-    
-    
-    open(os.path.join(write_dir, name[i]), 'w+')
-    
-    
-         
-    
+    with open(os.path.join(write_dir, name[i]), 'w+') as f:
+        f.writelines("%s" % line for line in content)
