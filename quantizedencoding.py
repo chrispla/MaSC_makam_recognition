@@ -20,27 +20,52 @@ for root, dirs, files in os.walk(read_dir):
 write_dir = "./qdata/" #write directory
 octave_folding = False
 
-#Generate list of frequencies for 53ET
-C0 = 16.352
+#Generate list of frequencies for selected TET
+A4 = 440
+C0 = A4*(2**(-57/12.0)) #calculate exact C0 from tuning reference
 freq_max = 2093.0 #around C7
-freq53TET = [C0]
+TET = 53 #choose equal temperament bins, consider rounding value later on
+freqs = [C0]
 idx = 0
-while (freq53TET[idx] < freq_max):
-    freq53TET.append(freq53TET[idx] + ((freq53TET[idx])**(1/53.0)))
+while (freqs[idx] < freq_max):
+    freqn = (freqs[idx])*(2**(1/float(TET)))
+    freqs.append(freqn)
     idx += 1
-freq_list_len = len(freq53TET)
+freq_list_len = len(freqs)
+print(freq_list_len)
+print(freqs)
 
 #Traverse all paths
 for i in range(len(all_paths)):
+    
+    #FOR EVERY FILE
     with open(all_paths[i]) as f:
         content = f.readlines() #read file into list of lines
         
-        #remove 0 (and negative, if they exist) values
+        #FOR EVERY LINE
         for j in range(len(content)):
-            if ((float(content.rstrip()) <= 0) or (float(content.rstrip()) > freq_max)):
+            
+            freq = float(content.rstrip())
+            
+            #QUANTIZATION
+            
+            #remove 0 and over freq_max (and negative, if they exist) values
+            if ((freq <= 0) or (freq > freq_max)):
                 content.remove(j)
-        
-        #find closest value to quantize to
+            else:
+                #find closest value to quantize to (should be implemented more efficiently in the future)
+                idx = 0
+                while (freq < freqs[idx]):
+                    idx+=1
+                #freq is freqs[idx-1] and freqs[idx], find closer
+                min_dif = min(freq-freq[idx-1], freq[idx]-freq)
+                if (min_dif == freq-freq[idx-1]):
+                    content[j] = str(round(freq[idx-i], 1))+ "\n"
+                else:
+                    content[j] = str(round(freq[idx], 1))+ "\n"
+                
+            #ENTRY MERGE
+            
         
                 
     
