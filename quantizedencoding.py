@@ -38,16 +38,16 @@ print(freqs)
 #Traverse all paths
 for i in range(len(all_paths)):
     
-    #FOR EVERY FILE
+    #For every file
     with open(all_paths[i]) as f:
         content = f.readlines() #read file into list of lines
         
-        #FOR EVERY LINE
+        #QUANTIZATION
+        
+        #For every line
         for j in range(len(content)):
             
-            freq = float(content.rstrip())
-            
-            #QUANTIZATION
+            freq = float(content[j].rstrip())
             
             #remove 0 and over freq_max (and negative, if they exist) values
             if ((freq <= 0) or (freq > freq_max)):
@@ -64,7 +64,34 @@ for i in range(len(all_paths)):
                 else:
                     content[j] = str(round(freq[idx], 1))+ "\n"
                 
-            #ENTRY MERGE
+        #ENTRY MERGE 
+                    
+        #count consecutive entries
+        consec = 1
+        
+        #keep min and max for significance value
+        min_consec = 100000
+        max_consec = 0   
+            
+        #For every line
+        idx = 0
+        while (True):
+            if (idx+1 <= len(content)):  
+                if (content[idx] == content[idx+1]):
+                    #if next entry same as current, remove and keep track of streak
+                    content.remove(idx+1)
+                    consec+=1
+                else:
+                    #if next line different, alter current entry, increment idx, end streak
+                    n_line = (content[j].rstrip()) + "," + str(consec) + "\n"
+                    idx+=1
+                    if (consec > max_consec):
+                        max_consec = consec
+                    if (consec < min_consec):
+                        min_consec = consec
+                    consec = 1
+        
+            
             
         
                 
