@@ -91,6 +91,23 @@ for i in range(len(all_paths)):
                         min_consec = consec
                     consec = 1
         
+        #SIGNIFICANCE VALUE
+        
+        dif = max_consec - min_consec
+        
+        #For every line
+        for j in range(len(content)):
+            
+            c_line = content[j].split(",")
+            c_line[1] = int(c_line[1].rstrip())
+            if (c_line[1] <= (min_consec + (0.25*dif))):
+                c_line[1] = 1
+            elif ((c_line[i] > (min_consec + (0.25*dif))) and (c_line[i] < (max_consec - (0.25*dif)))):
+                c_line[1] = 2
+            elif (c_line[1] >= (max_consec - (0.25*dif))):
+                c_line[1] = 3
+            
+            content[j] = c_line[0] + "," + str(c_line[1]) + "\n"
             
             
         
