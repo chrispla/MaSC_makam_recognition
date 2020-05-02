@@ -62,11 +62,11 @@ for i in range(len(all_paths)):
                     #freq is freqs[idx-1] and freqs[idx], find closer
                     min_dif = min(freq-freqs[idx-1], freqs[idx]-freq)
                     if (min_dif == freq-freqs[idx-1]):
-                        #content[j] = str(round(freqs[idx-i], 1))+ "\n"
-                        new_content.append(str(freqs[idx-i])+ "\n")
+                        new_content.append(str(round(freqs[idx-i], 1))+ "\n")
+                        #new_content.append(str(freqs[idx-i])+ "\n")
                     else:
-                        #content[j] = str(round(freqs[idx], 1))+ "\n"
-                        new_content.append(str(freqs[idx])+ "\n")
+                        new_content.append(str(round(freqs[idx], 1))+ "\n")
+                        #new_content.append(str(freqs[idx])+ "\n")
                 j+=1
 
             else:
@@ -93,7 +93,7 @@ for i in range(len(all_paths)):
                     consec+=1
                 else:
                     #if next line different, alter current entry, increment idx, end streak
-                    n_line = (new_content[idx].rstrip()) + "," + str(consec) + "\n"
+                    new_content[idx] = (new_content[idx].rstrip()) + "," + str(consec) + "\n"
                     idx+=1
                     if (consec > max_consec):
                         max_consec = consec
@@ -101,10 +101,18 @@ for i in range(len(all_paths)):
                         min_consec = consec
                     consec = 1
             else:
-                #break if out of bounds
+                if (len(new_content[idx].split(","))==1):
+                    #handle last value if not already handled
+                    new_content[idx] = (new_content[idx].rstrip()) + "," + str(consec) + "\n"
+    
+                    if (consec > max_consec):
+                        max_consec = consec
+                    if (consec < min_consec):
+                        min_consec = consec
                 break
         
         #SIGNIFICANCE VALUE
+        print(len(new_content))
         
         dif = max_consec - min_consec
         
@@ -112,11 +120,11 @@ for i in range(len(all_paths)):
         for j in range(len(new_content)):
             
             c_line = new_content[j].split(",")
-            print(j,c_line)
+            #print(j,c_line)
             c_line[1] = int(c_line[1].rstrip())
             if (c_line[1] <= (min_consec + (0.25*dif))):
                 c_line[1] = 1
-            elif ((c_line[i] > (min_consec + (0.25*dif))) and (c_line[i] < (max_consec - (0.25*dif)))):
+            elif ((c_line[1] > (min_consec + (0.25*dif))) and (c_line[1] < (max_consec - (0.25*dif)))):
                 c_line[1] = 2
             elif (c_line[1] >= (max_consec - (0.25*dif))):
                 c_line[1] = 3
@@ -126,4 +134,5 @@ for i in range(len(all_paths)):
     #WRITE TO NEW FILE
             
     with open(os.path.join(write_dir, name[i]), 'w+') as f:
-        f.writelines("%s" % line for line in content)
+        f.writelines("%s" % line for line in new_content)
+    break
