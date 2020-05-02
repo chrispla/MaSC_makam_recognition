@@ -15,7 +15,7 @@ for root, dirs, files in os.walk(read_dir):
         if '.pitch' in name:
                 all_paths.append(os.path.join(root, name))
                 all_names.append(name);
-
+print("Number of files:", str(len(all_paths)))
 #Writing parameters
 write_dir = "./qdata/" #write directory
 octave_folding = False
@@ -32,16 +32,16 @@ while (freqs[idx] < freq_max):
     freqs.append(freqn)
     idx += 1
 freq_list_len = len(freqs)
-print("freqs length :",freq_list_len)
+print("Length of frequencies generated:",freq_list_len)
 
 #Traverse all paths
 for i in range(len(all_paths)):
     
-    print("File :", all_names[i])
+    print("File:", all_names[i])
     #For every file
     with open(all_paths[i]) as f:
         content = f.readlines() #read file into list of lines
-        print(len(content))
+        
         #QUANTIZATION
         
         #For every line
@@ -112,7 +112,6 @@ for i in range(len(all_paths)):
                 break
         
         #SIGNIFICANCE VALUE
-        print(len(new_content))
         
         dif = max_consec - min_consec
         
