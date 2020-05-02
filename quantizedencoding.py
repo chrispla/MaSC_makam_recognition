@@ -121,7 +121,6 @@ for i in range(len(all_paths)):
             
             c_line = new_content[j].split(",")
             c_line[1] = int(c_line[1].rstrip())
-            print(c_line[1], end=",")
             if (c_line[1] <= (min_consec + (0.05*dif))):
                 c_line[1] = 1
             elif ((c_line[1] > (min_consec + (0.05*dif))) and (c_line[1] < (max_consec - (0.3*dif)))):
@@ -132,7 +131,5 @@ for i in range(len(all_paths)):
             new_content[j] = c_line[0] + "," + str(c_line[1]) + "\n"
             
     #WRITE TO NEW FILE
-            
-    with open(os.path.join(write_dir, name[i]), 'w+') as f:
+    with open(os.path.join(write_dir, all_names[i]), 'w+') as f:
         f.writelines("%s" % line for line in new_content)
-    break
