@@ -37,7 +37,7 @@ print("freqs length :",freq_list_len)
 #Traverse all paths
 for i in range(len(all_paths)):
     
-    print("i :", i)
+    print("File :", all_names[i])
     #For every file
     with open(all_paths[i]) as f:
         content = f.readlines() #read file into list of lines
@@ -120,13 +120,13 @@ for i in range(len(all_paths)):
         for j in range(len(new_content)):
             
             c_line = new_content[j].split(",")
-            #print(j,c_line)
             c_line[1] = int(c_line[1].rstrip())
-            if (c_line[1] <= (min_consec + (0.25*dif))):
+            print(c_line[1], end=",")
+            if (c_line[1] <= (min_consec + (0.05*dif))):
                 c_line[1] = 1
-            elif ((c_line[1] > (min_consec + (0.25*dif))) and (c_line[1] < (max_consec - (0.25*dif)))):
+            elif ((c_line[1] > (min_consec + (0.05*dif))) and (c_line[1] < (max_consec - (0.3*dif)))):
                 c_line[1] = 2
-            elif (c_line[1] >= (max_consec - (0.25*dif))):
+            elif (c_line[1] >= (max_consec - (0.3*dif))):
                 c_line[1] = 3
             
             new_content[j] = c_line[0] + "," + str(c_line[1]) + "\n"
