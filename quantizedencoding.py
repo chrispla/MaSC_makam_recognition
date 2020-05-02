@@ -19,8 +19,8 @@ for root, dirs, files in os.walk(read_dir):
 print("Number of files:", str(len(all_paths)))
 
 #Writing parameters
-write_dir = "./qdata/" #write directory
-octave_folding = False
+write_dir = "./octfold_qdata/" #write directory
+octave_folding = True
 
 #TET parameters
 A4 = 440.0 #A4 tuning reference, float
@@ -31,7 +31,7 @@ rounding_precision = 1 #must adjust based on TET
 #Traverse all paths
 for i in range(len(all_paths)):
     
-    print("File:", all_names[i])
+    print("File " + str(i) + ":" + all_names[i])
     #For every file
     with open(all_paths[i]) as f:
         content = f.readlines() #read file into list of lines
@@ -52,9 +52,16 @@ for i in range(len(all_paths)):
                 #calculate offset from tuning, aka amount of notes away (in specified TET)
                 #round it to nearest note, and then use the rounded value to calculate quantized note
                 offset = round(TET * math.log(freq/A4, 2)) #calculate offset from tuning reference
+                if (octave_folding):
+                    if (offset < 0):
+                        offset = offset%TET #fold to one octave
+                        offset = TET-offset #in reference to A4, so smaller than A4
+                        #values need to be reflected over A4 to upper octave 
+                    else:
+                        offset = offset%TET
+                    
                 new_freq = round(A4 * (2**(offset/float(TET))),rounding_precision) 
                 
-                print(str(freq) + "/" + str(new_freq))
                 new_content.append(str(new_freq) + "\n")
                 
                 
