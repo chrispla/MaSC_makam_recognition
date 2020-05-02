@@ -5,6 +5,7 @@
 import glob
 import os
 import numpy as np
+import math
 
 #Reading paths of .pitch files
 read_dir = "./otmm_makam_recognition_dataset/data/" #pitch file directory
@@ -16,23 +17,16 @@ for root, dirs, files in os.walk(read_dir):
                 all_paths.append(os.path.join(root, name))
                 all_names.append(name);
 print("Number of files:", str(len(all_paths)))
+
 #Writing parameters
 write_dir = "./qdata/" #write directory
 octave_folding = False
 
-#Generate list of frequencies for selected TET
-A4 = 440
-C0 = A4*(2**(-57/12.0)) #calculate exact C0 from tuning reference
+#TET parameters
+A4 = 440.0 #A4 tuning reference, float
 freq_max = 2093.0 #around C7
-TET = 53 #choose equal temperament bins, consider rounding value later on
-freqs = [C0]
-idx = 0
-while (freqs[idx] < freq_max):
-    freqn = (freqs[idx])*(2**(1/float(TET)))
-    freqs.append(freqn)
-    idx += 1
-freq_list_len = len(freqs)
-print("Length of frequencies generated:",freq_list_len)
+TET = 53 #choose equal temperament bins
+rounding_precision = 1 #must adjust based on TET
 
 #Traverse all paths
 for i in range(len(all_paths)):
@@ -47,32 +41,22 @@ for i in range(len(all_paths)):
         #For every line
         j = 0
         new_content = []
-        while (True):
             
-            if (j<len(content)):
-                
-                freq = float(content[j].rstrip())
-                
-                #remove 0 and over freq_max (and negative, if they exist) values
-                if (freq > 0 and freq<freq_max):
-                    #find closest value to quantize to (should be implemented more efficiently in the future)
-                    idx = 0
-                    while (freq > freqs[idx]):
-                        idx+=1
-                    #freq is freqs[idx-1] and freqs[idx], find closer
-                    min_dif = min(freq-freqs[idx-1], freqs[idx]-freq)
-                    if (min_dif == freq-freqs[idx-1]):
-                        new_content.append(str(round(freqs[idx-i], 1))+ "\n")
-                        #new_content.append(str(freqs[idx-i])+ "\n")
-                    else:
-                        new_content.append(str(round(freqs[idx], 1))+ "\n")
-                        #new_content.append(str(freqs[idx])+ "\n")
-                j+=1
+        for j in range(len(content)):
+            
+            freq = float(content[j].rstrip())
 
-            else:
-                #break if out of bounds
-                break
-            
+            #remove 0 and over freq_max (and negative, if they exist) values
+            if (freq > 0 and freq<freq_max):
+                
+                #calculate offset from tuning, aka amount of notes away (in specified TET)
+                #round it to nearest note, and then use the rounded value to calculate quantized note
+                offset = round(TET * math.log(freq/A4, 2)) #calculate offset from tuning reference
+                new_freq = round(A4 * (2**(offset/float(TET))),rounding_precision) 
+                
+                print(str(freq) + "/" + str(new_freq))
+                new_content.append(str(new_freq) + "\n")
+                
                 
         #ENTRY MERGE 
             
